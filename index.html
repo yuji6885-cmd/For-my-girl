@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>For Her 🌸</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Lato:wght@300;400&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#050505;font-family:'Lato',sans-serif;color:#fff8fc;overflow:hidden;height:100vh;width:100vw;cursor:crosshair;user-select:none;-webkit-user-select:none;}
+
+/* PAGES */
+#page-home{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:30px 20px;text-align:center;z-index:1;}
+#page-bloom{position:fixed;inset:0;background:#02000a;display:none;z-index:100;overflow:hidden;}
+#page-bloom.show{display:block;}
+
+/* HOME CONTENT */
+.eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#e8c97e;margin-bottom:4px;}
+.title{font-family:'Playfair Display',serif;font-size:clamp(24px,5.5vw,40px);line-height:1.25;color:#fff8fc;}
+.title em{color:#f7a8c4;font-style:italic;}
+.note{font-size:14px;font-weight:300;line-height:1.8;color:#c8b0bb;max-width:420px;}
+
+/* ROSE */
+.rose-wrap{animation:floatRose 4s ease-in-out infinite;filter:drop-shadow(0 0 20px #f7a8c460);}
+@keyframes floatRose{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-12px) rotate(3deg);}}
+
+/* BUTTONS */
+.btns{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;}
+.btn{border:none;border-radius:50px;padding:13px 28px;font-family:'Lato',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:transform .15s,box-shadow .2s;}
+.btn:active{transform:scale(.94)!important;}
+.btn-list{background:transparent;color:#f7a8c4;border:1.5px solid #f7a8c4;box-shadow:0 0 16px #f7a8c425;}
+.btn-list:hover{box-shadow:0 0 28px #f7a8c455;}
+.btn-bloom-open{background:linear-gradient(135deg,#e06090,#f7a8c4);color:#1a0010;font-weight:700;box-shadow:0 0 22px #e0609055;}
+.btn-bloom-open:hover{box-shadow:0 0 40px #e0609088;transform:scale(1.05);}
+
+/* FALLING PETALS BG */
+.fall-petal{position:fixed;pointer-events:none;z-index:0;animation:fall linear infinite;opacity:.18;}
+@keyframes fall{from{transform:translateY(-40px) rotate(0deg);}to{transform:translateY(105vh) rotate(720deg);opacity:0;}}
+
+/* GROWN FLOWER — the core growing animation */
+.flower-grow{
+  position:fixed;pointer-events:none;z-index:200;
+  transform-origin:center bottom;
+  animation:growUp var(--d,1.2s) cubic-bezier(.22,1.2,.36,1) forwards;
+  font-size:var(--s,36px);
+  will-change:transform,opacity;
+}
+@keyframes growUp{
+  0%  {transform:translate(-50%,-50%) scale(0) rotate(-20deg);opacity:0;}
+  15% {opacity:1;}
+  60% {transform:translate(-50%,-50%) scale(1.25) rotate(6deg);opacity:1;}
+  80% {transform:translate(-50%,-50%) scale(.92) rotate(-3deg);opacity:1;}
+  100%{transform:translate(-50%,-50%) scale(1) rotate(0deg);opacity:var(--final-op,0);}
+}
+
+/* BLOOM SCREEN FLOWERS stay forever */
+.flower-stay{
+  position:absolute;pointer-events:none;
+  transform-origin:center bottom;
+  animation:growStay var(--d,1.2s) cubic-bezier(.22,1.2,.36,1) forwards;
+  font-size:var(--s,36px);
+  will-change:transform;
+}
+@keyframes growStay{
+  0%  {transform:translate(-50%,-50%) scale(0) rotate(-20deg);opacity:0;}
+  15% {opacity:1;}
+  60% {transform:translate(-50%,-50%) scale(1.3) rotate(8deg);opacity:1;}
+  80% {transform:translate(-50%,-50%) scale(.94) rotate(-3deg);opacity:1;}
+  100%{transform:translate(-50%,-50%) scale(1) rotate(0deg);opacity:.9;}
+}
+
+/* SPARKLE */
+.spark{position:fixed;pointer-events:none;z-index:300;border-radius:50%;animation:sparkFly var(--d,.6s) ease-out forwards;}
+@keyframes sparkFly{
+  0%{transform:translate(-50%,-50%) translate(0,0) scale(1.4);opacity:1;}
+  100%{transform:translate(-50%,-50%) translate(var(--tx),var(--ty)) scale(0);opacity:0;}
+}
+
+/* BLOOM SCREEN UI */
+.bloom-back{position:absolute;top:16px;right:18px;z-index:110;background:none;border:1.5px solid #f7a8c440;color:#f7a8c480;font-family:'Lato',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:8px 18px;border-radius:40px;cursor:pointer;transition:all .2s;}
+.bloom-back:hover{background:#f7a8c415;color:#f7a8c4;}
+.bloom-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;transition:opacity .8s;z-index:105;}
+.bloom-hint.gone{opacity:0;}
+.bloom-hint-icon{font-size:54px;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.18);}}
+.bloom-hint p{font-family:'Playfair Display',serif;font-style:italic;color:#f7a8c480;font-size:16px;margin-top:12px;letter-spacing:.5px;}
+.bloom-hint small{display:block;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#e8c97e60;margin-top:6px;}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(5,5,5,.93);backdrop-filter:blur(10px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-bg.show{display:flex;}
+.modal-box{background:#110008;border:1px solid #f7a8c430;border-radius:18px;max-width:580px;width:100%;max-height:82vh;overflow-y:auto;padding:32px 28px;position:relative;box-shadow:0 0 60px #e0609028;scrollbar-width:thin;scrollbar-color:#f7a8c430 transparent;}
+.modal-x{position:absolute;top:14px;right:18px;background:none;border:none;color:#f7a8c470;font-size:20px;cursor:pointer;line-height:1;}
+.modal-x:hover{color:#f7a8c4;}
+.modal-h{font-family:'Playfair Display',serif;font-size:20px;color:#f7a8c4;margin-bottom:20px;padding-right:28px;}
+.item{display:flex;gap:10px;align-items:flex-start;padding:9px 11px;border-radius:9px;background:#1e0012;border:1px solid #f7a8c412;font-size:13px;line-height:1.5;color:#ddb8c8;margin-bottom:8px;animation:fadeUp .35s ease both;animation-delay:calc(var(--i)*12ms);}
+.num{font-family:'Playfair Display',serif;font-size:10px;color:#e8c97e;min-width:20px;opacity:.65;padding-top:1px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<!-- HOME PAGE -->
+<div id="page-home">
+  <div class="rose-wrap">
+    <svg width="150" height="150" viewBox="0 0 200 200" fill="none">
+      <path d="M100 188 Q95 158 100 138" stroke="#4a7c59" stroke-width="4" stroke-linecap="round"/>
+      <path d="M100 163 Q84 153 73 143" stroke="#4a7c59" stroke-width="3" stroke-linecap="round"/>
+      <ellipse cx="100" cy="72" rx="18" ry="38" fill="#e06090" opacity=".85" transform="rotate(0 100 100)"/>
+      <ellipse cx="100" cy="72" rx="18" ry="38" fill="#f7a8c4" opacity=".8" transform="rotate(45 100 100)"/>
+      <ellipse cx="100" cy="72" rx="18" ry="38" fill="#e06090" opacity=".85" transform="rotate(90 100 100)"/>
+      <ellipse cx="100" cy="72" rx="18" ry="38" fill="#f7a8c4" opacity=".8" transform="rotate(135 100 100)"/>
+      <ellipse cx="100" cy="72" rx="18" ry="38" fill="#e06090" opacity=".85" transform="rotate(180 100 100)"/>
+      <ellipse cx="100" cy="72" rx="18" ry="38" fill="#f7a8c4" opacity=".8" transform="rotate(225 100 100)"/>
+      <ellipse cx="100" cy="72" rx="18" ry="38" fill="#e06090" opacity=".85" transform="rotate(270 100 100)"/>
+      <ellipse cx="100" cy="72" rx="18" ry="38" fill="#f7a8c4" opacity=".8" transform="rotate(315 100 100)"/>
+      <ellipse cx="100" cy="82" rx="11" ry="24" fill="#fde8f0" opacity=".9" transform="rotate(22 100 100)"/>
+      <ellipse cx="100" cy="82" rx="11" ry="24" fill="#fde8f0" opacity=".9" transform="rotate(90 100 100)"/>
+      <ellipse cx="100" cy="82" rx="11" ry="24" fill="#fde8f0" opacity=".9" transform="rotate(158 100 100)"/>
+      <ellipse cx="100" cy="82" rx="11" ry="24" fill="#fde8f0" opacity=".9" transform="rotate(226 100 100)"/>
+      <ellipse cx="100" cy="82" rx="11" ry="24" fill="#fde8f0" opacity=".9" transform="rotate(294 100 100)"/>
+      <circle cx="100" cy="100" r="18" fill="#e8c97e" opacity=".95"/>
+      <circle cx="100" cy="100" r="11" fill="#c8941a"/>
+      <circle cx="100" cy="100" r="5" fill="#7a4800"/>
+      <circle cx="96" cy="96" r="1.5" fill="#fde8f0" opacity=".8"/>
+      <circle cx="104" cy="96" r="1.5" fill="#fde8f0" opacity=".8"/>
+      <circle cx="100" cy="104" r="1.5" fill="#fde8f0" opacity=".8"/>
+    </svg>
+  </div>
+  <div>
+    <p class="eyebrow">✦ A little something for you ✦</p>
+    <h1 class="title">You bloom like a flower<br>in <em>everything</em> you do.</h1>
+  </div>
+  <p class="note">Somewhere between your laugh and the way you make ordinary moments feel like magic — I realized the world is simply more beautiful because you're in it.</p>
+  <div class="btns">
+    <button class="btn btn-list" id="btnList">💌 100 things about you</button>
+    <button class="btn btn-bloom-open" id="btnBloom">🌸 Flower Bloom</button>
+  </div>
+</div>
+
+<!-- BLOOM SCREEN -->
+<div id="page-bloom">
+  <button class="bloom-back" id="btnBack">✕ Back</button>
+  <div class="bloom-hint" id="bloomHint">
+    <div class="bloom-hint-icon">🌸</div>
+    <p>Tap anywhere to grow flowers</p>
+    <small>every touch blooms for you</small>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal-box">
+    <button class="modal-x" id="modalX">✕</button>
+    <h2 class="modal-h">💛 100 Cute & Beautiful Things About You</h2>
+    <div id="listWrap"></div>
+  </div>
+</div>
+
+<script>
+const THINGS=[
+"The way your eyes light up when you talk about something you love.",
+"Your laugh — it's literally contagious and the best sound.",
+"How kind you are to everyone around you, even strangers.",
+"The little frown you make when you're thinking hard.",
+"Your ability to make anyone feel welcome and seen.",
+"The way you care so deeply — it's rare and so beautiful.",
+"Your voice is softer than any song I know.",
+"The effort you put into everything, even small things.",
+"How you somehow look stunning in literally anything you wear.",
+"Your heart — it's genuinely the most beautiful thing about you.",
+"The way you smile before you even finish a funny thought.",
+"Your curiosity. You always want to understand the world better.",
+"How you remember the tiny details others forget.",
+"The warmth you carry wherever you go.",
+"Your hands — always busy creating or helping someone.",
+"The glow you have that no filter could ever replicate.",
+"How you can turn a bad day around just by showing up.",
+"Your patience — even when it must be so hard to keep it.",
+"The way you hug — it genuinely feels like a safe place.",
+"Your taste in everything: music, places, tiny beautiful things.",
+"How you stand up for what's right, quietly but firmly.",
+"The way time feels different when you're in the room.",
+"Your resilience — you've been through so much and still bloom.",
+"The small acts of love you do without even realizing.",
+"Your eyes — they say everything your words don't.",
+"How you make people feel like they truly matter.",
+"The way you get excited about things you love — pure joy.",
+"Your intelligence. It shows in the most charming ways.",
+"How honest you are, even when it takes courage.",
+"The softness you carry underneath your strength.",
+"Your intuition — you just know things somehow.",
+"The way you light up a photograph without trying.",
+"How genuinely you celebrate others' happiness.",
+"Your creativity — the way you see beauty others miss.",
+"The little habits that make you, uniquely you.",
+"How gracefully you handle hard things.",
+"Your empathy — you feel what others feel so deeply.",
+"The way your presence alone is calming.",
+"Your determination when you set your mind to something.",
+"How you make ordinary moments feel like memories worth keeping.",
+"The thoughtful way you choose your words.",
+"Your ability to find something funny in almost anything.",
+"The way you love — fully, genuinely, without holding back.",
+"How you keep growing and becoming more yourself every day.",
+"Your sensitivity — it's a strength, not a weakness.",
+"The little smile you don't even know you're making.",
+"How you make people around you want to be better.",
+"Your courage — quiet and steady and real.",
+"The way sunlight seems to find you in every room.",
+"How you hold space for people going through hard things.",
+"Your dreams — big, vivid, and worth every bit of effort.",
+"The way you apologize — sincerely, without ego.",
+"How you love the small things: a good song, a warm cup, a nice sky.",
+"Your face when something surprises you — pure gold.",
+"The way you make everyone feel like the most important person.",
+"How you handle disagreements with grace and openness.",
+"Your style — effortless, you, and always beautiful.",
+"The way you show up for people who need you.",
+"How you keep your promises, even the tiny ones.",
+"Your ability to adapt and find peace even in chaos.",
+"The way you look when you're completely in your element.",
+"How deep your feelings run — it's breathtaking.",
+"Your quiet strength that carries so much without showing it.",
+"The way you make hard things look easy.",
+"How you're always evolving, always learning.",
+"Your laugh lines — proof of a life lived joyfully.",
+"The way your energy shifts a room the moment you walk in.",
+"How generous you are — with your time, attention, and heart.",
+"Your sense of humor — sharp, warm, and perfectly timed.",
+"The way you talk about the people you love.",
+"How you make every space feel more alive.",
+"Your softness on the days you let people see it.",
+"The way you notice when someone is hurting.",
+"How hard you try, every single day.",
+"Your eyes when you're listening — fully, completely present.",
+"The way you hold things together even when you're falling apart.",
+"How you turn your pain into wisdom and grace.",
+"Your commitment to the people and things that matter to you.",
+"The way small things make you genuinely happy.",
+"How you're brave enough to be exactly who you are.",
+"Your trust — and how precious it is when you give it.",
+"The way you carry yourself — with a quiet dignity.",
+"How you are the kind of person people never forget.",
+"Your face in the morning — sleepy and real and beautiful.",
+"The way you make people feel safe around you.",
+"How you fight for the things and people you love.",
+"Your vulnerability — it takes real courage to be open.",
+"The way you find light even in the darkest times.",
+"How you inspire people without even trying.",
+"Your heart's capacity — it seems endless.",
+"The way you grow through every season of life.",
+"How you love yourself, even on the hard days.",
+"Your presence — it's a gift to everyone who gets to be near it.",
+"The way the world is genuinely richer with you in it.",
+"How everything beautiful somehow reminds me of you.",
+"Your whole self — messy, wonderful, and irreplaceable.",
+"The way you are, right now, exactly as you are — enough, and more.",
+"You. Just you. Completely, perfectly, beautifully you. 🌸"
+];
+
+const FLOWERS=['🌸','🌺','🌷','🌼','🪷','💮','🌹','🌻'];
+const COLORS=['#f7a8c4','#e06090','#fde8f0','#e8c97e','#d070c0','#ff9ec5','#ffb3d0'];
+const rnd=(a,b)=>a+Math.random()*(b-a);
+
+/* ── Falling bg petals ── */
+const home=document.getElementById('page-home');
+for(let i=0;i<16;i++){
+  const s=document.createElement('div');
+  s.className='fall-petal';
+  s.textContent=FLOWERS[Math.floor(Math.random()*FLOWERS.length)];
+  const dur=rnd(10,24);
+  s.style.cssText=`left:${rnd(0,100)}%;top:-30px;font-size:${rnd(12,20)}px;animation-duration:${dur}s;animation-delay:-${rnd(0,dur)}s;`;
+  document.body.appendChild(s);
+}
+
+/* ── Grow a flower (transient, fades out) ── */
+function growFlower(x,y,container,permanent){
+  const el=document.createElement('div');
+  el.className= permanent ? 'flower-stay' : 'flower-grow';
+  const s=rnd(30,62);
+  const d=rnd(1.0,1.5);
+  el.style.cssText=`left:${x}px;top:${y}px;--s:${s}px;--d:${d}s;${permanent?'':'--final-op:0;'}color:${COLORS[Math.floor(Math.random()*COLORS.length)]};`;
+  el.textContent=FLOWERS[Math.floor(Math.random()*FLOWERS.length)];
+  container.appendChild(el);
+  if(!permanent) el.addEventListener('animationend',()=>el.remove());
+}
+
+/* ── Sparkles ── */
+function sparkle(x,y,container){
+  for(let i=0;i<7;i++){
+    const s=document.createElement('div');
+    s.className='spark';
+    const ang=rnd(0,360)*Math.PI/180;
+    const dist=rnd(30,90);
+    s.style.cssText=`
+      left:${x}px;top:${y}px;
+      width:${rnd(4,8)}px;height:${rnd(4,8)}px;
+      background:${COLORS[Math.floor(Math.random()*COLORS.length)]};
+      --tx:${Math.cos(ang)*dist}px;--ty:${Math.sin(ang)*dist}px;
+      --d:${rnd(.35,.7)}s;
+      animation-delay:${rnd(0,.08)}s;
+    `;
+    container.appendChild(s);
+    s.addEventListener('animationend',()=>s.remove());
+  }
+}
+
+/* ── Home page tap ── */
+home.addEventListener('click',e=>{
+  if(e.target.closest('.btn')) return;
+  growFlower(e.clientX,e.clientY,document.body,false);
+  sparkle(e.clientX,e.clientY,document.body);
+});
+
+/* ── Bloom Screen ── */
+const bloomScreen=document.getElementById('page-bloom');
+let hintGone=false;
+
+document.getElementById('btnBloom').addEventListener('click',()=>{
+  // clear previous flowers
+  bloomScreen.querySelectorAll('.flower-stay').forEach(f=>f.remove());
+  hintGone=false;
+  const hint=document.getElementById('bloomHint');
+  hint.classList.remove('gone');
+  bloomScreen.classList.add('show');
+});
+
+document.getElementById('btnBack').addEventListener('click',()=>{
+  bloomScreen.classList.remove('show');
+});
+
+bloomScreen.addEventListener('click',e=>{
+  if(e.target.closest('.bloom-back')) return;
+  // hide hint on first tap
+  if(!hintGone){
+    hintGone=true;
+    document.getElementById('bloomHint').classList.add('gone');
+  }
+  // grow 1–3 flowers, staggered slightly
+  const n=Math.floor(rnd(1,4));
+  for(let i=0;i<n;i++){
+    setTimeout(()=>{
+      const ox=rnd(-20,20), oy=rnd(-20,20);
+      growFlower(e.clientX+ox,e.clientY+oy,bloomScreen,true);
+    },i*90);
+  }
+  sparkle(e.clientX,e.clientY,bloomScreen);
+});
+
+/* ── Modal ── */
+document.getElementById('btnList').addEventListener('click',()=>{
+  const wrap=document.getElementById('listWrap');
+  wrap.innerHTML='';
+  THINGS.forEach((t,i)=>{
+    const d=document.createElement('div');
+    d.className='item';
+    d.style.setProperty('--i',i);
+    d.innerHTML=`<span class="num">${String(i+1).padStart(2,'0')}</span><span>${t}</span>`;
+    wrap.appendChild(d);
+  });
+  document.getElementById('modal').classList.add('show');
+});
+document.getElementById('modalX').addEventListener('click',()=>document.getElementById('modal').classList.remove('show'));
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))document.getElementById('modal').classList.remove('show');});
+</script>
+</body>
+</html>
+
